@@ -69,19 +69,30 @@ export async function POST(req: Request) {
 
     const ai = new GoogleGenAI({ apiKey: API_KEY });
     
-    // AI chaqiruvi (YANGILANGAN VA KUCHAYTIRILGAN)
-    const response = await ai.models.generateContent({
-      model: 'gemini-3-flash-preview',
-      contents: text,
-      config: {
-        systemInstruction: SYSTEM_PROMPT,
-        temperature: 0.1, // Juda aniq va mantiqli ishlashi uchun 0.1
-        responseMimeType: 'application/json',
-        responseSchema: responseSchema, // AI "qistib olinadigan" shablon
+    let response;
+    let retries = 3;
+    while (retries > 0) {
+      try {
+        response = await ai.models.generateContent({
+          model: 'gemini-2.0-flash',
+          contents: text,
+          config: {
+            systemInstruction: SYSTEM_PROMPT,
+            temperature: 0.1,
+            responseMimeType: 'application/json',
+            responseSchema: responseSchema,
+          }
+        });
+        break;
+      } catch (error: any) {
+        retries--;
+        console.error(`Error 503 / Limit, retrying... Left: ${retries}`);
+        if (retries === 0) throw error;
+        await new Promise(res => setTimeout(res, 3000));
       }
-    });
+    }
 
-    let aiText = response.text;
+    let aiText = response?.text;
     
     if (!aiText) {
       throw new Error("AI javob qaytarishni xohladi, lekin xato berdi.");
