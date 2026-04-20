@@ -71,7 +71,7 @@ export async function POST(req: Request) {
     
     // AI chaqiruvi (YANGILANGAN VA KUCHAYTIRILGAN)
     const response = await ai.models.generateContent({
-      model: 'gemini-1.5-flash',
+      model: 'gemini-3-flash-preview',
       contents: text,
       config: {
         systemInstruction: SYSTEM_PROMPT,
