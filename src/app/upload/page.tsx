@@ -2,9 +2,11 @@
 
 import { useState, useRef } from 'react';
 import Link from 'next/link';
+import mammoth from 'mammoth';
 
 export default function UploadPage() {
   const [text, setText] = useState('');
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [showResult, setShowResult] = useState(false);
   
@@ -21,14 +23,40 @@ export default function UploadPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleAnalyze = async () => {
-    if (!text && !fileInputRef.current?.files?.length) return;
+    if (!text && !selectedFile) return;
     setIsAnalyzing(true);
     
     try {
+      let requestPayload: any = { text: "" };
+      
+      if (selectedFile) {
+        if (selectedFile.name.endsWith('.docx')) {
+            const arrayBuffer = await selectedFile.arrayBuffer();
+            const result = await mammoth.extractRawText({ arrayBuffer });
+            requestPayload.text = result.value + "\n\n(Qo'shimcha so'rov: " + text + ")";
+        } else {
+            const base64String = await new Promise<string>((resolve) => {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    const res = reader.result as string;
+                    resolve(res.split(',')[1]);
+                };
+                reader.readAsDataURL(selectedFile);
+            });
+            requestPayload.text = "Ushbu fayldagi matnni esse qoidalari bo'yicha tahlil qil.";
+            requestPayload.fileData = {
+                base64: base64String,
+                mimeType: selectedFile.type || 'application/pdf'
+            };
+        }
+      } else {
+        requestPayload.text = text;
+      }
+
       const res = await fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: text })
+        body: JSON.stringify(requestPayload)
       });
       const data = await res.json();
       if (!res.ok || data.error) {
@@ -49,6 +77,8 @@ export default function UploadPage() {
     setShowResult(false);
     setResultData(null);
     setText('');
+    setSelectedFile(null);
+    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   return (
@@ -100,9 +130,17 @@ export default function UploadPage() {
                     type="file" 
                     className="hidden" 
                     ref={fileInputRef} 
-                    accept="image/*,.pdf"
+                    accept="image/*,.pdf,.docx"
                     onChange={(e) => {
-                      if (e.target.files?.length) setText("Rasm yuklandi: " + e.target.files[0].name);
+                      if (e.target.files?.length) {
+                        const file = e.target.files[0];
+                        if (file.size > 4.5 * 1024 * 1024) {
+                            alert("Fayl hajmi 4.5MB dan oshmasligi kerak (Vercel talabi).");
+                            return;
+                        }
+                        setSelectedFile(file);
+                        setText("Fayl yuklandi: " + file.name);
+                      }
                     }}
                   />
                 </div>
@@ -145,7 +183,7 @@ export default function UploadPage() {
               <div className="flex justify-center pt-8">
                 <button 
                   onClick={handleAnalyze}
-                  disabled={isAnalyzing || (!text && text.indexOf('Rasm yuklandi') === -1)}
+                  disabled={isAnalyzing || (!text && !selectedFile)}
                   className="relative group disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {!isAnalyzing && <div className="absolute -inset-2 bg-primary blur-xl opacity-20 group-hover:opacity-40 transition duration-300 rounded-full"></div>}
@@ -225,7 +263,9 @@ export default function UploadPage() {
                 <div className="mt-8 grid grid-cols-2 gap-4 w-full">
                   <div className="bg-slate-800/50 p-3 rounded-xl border border-slate-700/50 shadow-sm hover:shadow-md transition-shadow">
                     <div className="text-xs text-slate-500 mb-1">So'zlar soni</div>
-                    <div className="text-xl font-bold font-headline text-slate-50">{text.split(' ').length || 284}</div>
+                    <div className="text-xl font-bold font-headline text-slate-50">
+                      {resultData?.idealVersion ? resultData.idealVersion.trim().split(/\s+/).length : 0}
+                    </div>
                   </div>
                   <div className="bg-slate-800/50 p-3 rounded-xl border border-slate-700/50 shadow-sm hover:shadow-md transition-shadow">
                     <div className="text-xs text-slate-500 mb-1">Daraja</div>

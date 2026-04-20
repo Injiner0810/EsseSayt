@@ -56,10 +56,10 @@ const responseSchema = {
 export async function POST(req: Request) {
   try {
     const data = await req.json();
-    const { text } = data;
+    const { text, fileData } = data;
 
-    if (!text) {
-      return NextResponse.json({ error: "Esse matni kiritilmadi!" }, { status: 400 });
+    if (!text && !fileData) {
+      return NextResponse.json({ error: "Esse matni yoki fayl kiritilmadi!" }, { status: 400 });
     }
 
     const API_KEY = process.env.GEMINI_API_KEY;
@@ -73,9 +73,20 @@ export async function POST(req: Request) {
     let retries = 3;
     while (retries > 0) {
       try {
+        const parts: any[] = [];
+        if (fileData && fileData.base64 && fileData.mimeType) {
+            parts.push({
+                inlineData: {
+                    data: fileData.base64,
+                    mimeType: fileData.mimeType
+                }
+            });
+        }
+        parts.push({ text: text || "Faylni tahlil qil." });
+
         response = await ai.models.generateContent({
           model: 'gemini-3-flash-preview',
-          contents: text,
+          contents: parts,
           config: {
             systemInstruction: SYSTEM_PROMPT,
             temperature: 0.1,
