@@ -31,6 +31,10 @@ export default function UploadPage() {
         body: JSON.stringify({ text: text })
       });
       const data = await res.json();
+      if (!res.ok || data.error) {
+        alert("XATOLIK: " + (data.details || data.error || "Noma'lum xatolik yuz berdi."));
+        return;
+      }
       setResultData(data);
       setShowResult(true);
     } catch (e) {
