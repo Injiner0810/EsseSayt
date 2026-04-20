@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import { GoogleGenAI, Type } from '@google/genai';
 
+export const maxDuration = 60; // Vercel timeout ni 60 soniyaga uzaytirish
+export const dynamic = 'force-dynamic';
+
 const SYSTEM_PROMPT = `Siz O'zbekiston Milliy Sertifikati (Ona tili va adabiyot) bo'yicha adolatli va professional esse baholovchi mutaxassissiz.
 Vazifangiz o'quvchi matnini (0-24 ball) mezonida obyektiv tahlil qilish, munosib va rag'batlantiruvchi baho berishdir. 
 DIQQAT: Matndagi TO'G'RI yozilgan, ma'nosi tushunarli bo'lgan so'zlarni yoki shunchaki sizga boshqa sinonimi ma'qul ko'ringan so'zlarni XATO deb hisoblamang! Faqatgina mutlaqo xato, qoidabuzarlik yoki mantiqsizlik bo'lsagina belgilang. Juda qattiqqo'l bo'lmang, o'quvchiga insof bilan baho qo'ying (yaxshi esselarga 18-24 ball berishdan tortinmang).
