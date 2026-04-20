@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import Image from 'next/image';
 
 export default function Home() {
   return (
@@ -136,7 +135,7 @@ export default function Home() {
       <footer className="w-full py-12 border-t border-slate-700/50 bg-slate-900/50">
         <div className="max-w-7xl mx-auto px-8 flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex flex-col gap-1.5 text-center md:text-left w-full justify-center md:justify-start">
-            <div className="text-lg font-bold text-slate-50 font-headline">Muallif: Hotamova Diyora</div>
+            <div className="text-lg font-bold text-slate-50 font-headline">Muallif: Hatamova Diyora</div>
             <div className="font-['Inter'] text-sm text-slate-400 flex items-center justify-center md:justify-start gap-1.5">
               <span className="material-symbols-outlined text-sm text-primary">call</span>
               +998 (94) 123 45 67

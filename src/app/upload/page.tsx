@@ -9,7 +9,14 @@ export default function UploadPage() {
   const [showResult, setShowResult] = useState(false);
   
   // Data from API
-  const [resultData, setResultData] = useState<any>(null);
+  interface AnalysisResult {
+    totalScore: number;
+    criteriaScores: { mavzu: number; mantiq: number; lugat: number; imlo: number; };
+    htmlHighlightedText: string;
+    idealVersion: string;
+    feedbackList: { type: 'error' | 'warning' | 'success'; title: string; message: string; }[];
+  }
+  const [resultData, setResultData] = useState<AnalysisResult | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -226,7 +233,7 @@ export default function UploadPage() {
               <div className="space-y-4">
                 <h4 className="font-headline text-sm font-bold text-slate-500 px-2 uppercase tracking-widest">Kriteriyalar bo'yicha tahlil</h4>
                 
-                {resultData?.feedbackList?.map((fb: any, idx: number) => (
+                {resultData?.feedbackList?.map((fb, idx: number) => (
                   <div key={idx} className={`glass-panel p-5 rounded-xl flex flex-col gap-3 group hover:shadow-md transition-all duration-300 cursor-pointer hover:-translate-y-1 ${fb.type==='warning' ? 'hover:border-red-300' : 'hover:border-blue-300'}`}>
                     <div className="flex justify-between items-start">
                       <div className="flex items-center gap-3">

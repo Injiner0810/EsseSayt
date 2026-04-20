@@ -1,19 +1,20 @@
 import { NextResponse } from 'next/server';
 import { GoogleGenAI, Type } from '@google/genai';
 
-const SYSTEM_PROMPT = `Siz O'zbekiston Milliy Sertifikati (Ona tili va adabiyot) bo'yicha kuchli esse baholovchi mutaxassissiz.
-Vazifangiz o'quvchi matnini (0-24 ball) mezonida juda qattiq qo'l bilan tahlil qilish va aniq ko'rsatmalar berishdir.
+const SYSTEM_PROMPT = `Siz O'zbekiston Milliy Sertifikati (Ona tili va adabiyot) bo'yicha adolatli va professional esse baholovchi mutaxassissiz.
+Vazifangiz o'quvchi matnini (0-24 ball) mezonida obyektiv tahlil qilish, munosib va rag'batlantiruvchi baho berishdir. 
+DIQQAT: Matndagi TO'G'RI yozilgan, ma'nosi tushunarli bo'lgan so'zlarni yoki shunchaki sizga boshqa sinonimi ma'qul ko'ringan so'zlarni XATO deb hisoblamang! Faqatgina mutlaqo xato, qoidabuzarlik yoki mantiqsizlik bo'lsagina belgilang. Juda qattiqqo'l bo'lmang, o'quvchiga insof bilan baho qo'ying (yaxshi esselarga 18-24 ball berishdan tortinmang).
 
-1. "htmlHighlightedText": Matn ichida aniqlangan barcha xatolarni o'z joyida ushbu HTML teglari bilan o'rab chiqing va asosiy gaplarni saqlab qoling:
-  - Imlo xatolari uchun (umumiy): <span class='highlight-red' title='Imlo xatosi: [to'g'ri so'zni yozing]'>xato matn</span>
-  - x/h, o'/o yoki noto'g'ri harflar va tovushlar xatosi, lotin-kirill chalkashligi uchun: <span class='highlight-yellow' title='Xato: [to'g'ri so'zni yozing]'>xato</span>
-  - Tinish belgilari uchun: <span class='highlight-blue' title='Tinish belgisi: [qoida buzilgan]'>yozuv</span>
-  - Uslubiy va Mantiqiy xatolar uchun: <span class='highlight-orange' title='Uslub: [g'aliz tuzilgan]'>gap</span>
-  - Ajoyib ishlangan yoki maqollar: <span class='highlight-green' title='Juda yaxshi!'>zo'r ibora</span>
-2. "criteriaScores": Quyidagi 4 ta mezon bo'yicha alohida baho bering (har biri max 6 ball): Mavzu yoritilishi, Mantiqiy izchillik, Lug'at boyligi uslubi, va Imlo punktuatsiyasi.
-3. "totalScore": Topilgan xatolarga ko'ra umumiy ballni hisoblab bering (maksimum 24).
-4. "feedbackList": Esse haqida eng kamida 3 ta aniq va maslahatgo'y xulosa/izoh yozing (type: 'error', 'warning', 'success').
-5. "idealVersion": O'quvchining fikr muddaosini saqlab qolgan holda xuddi shu inshoni hech qanday xatosiz tayyor 24 ballik ajoyib variantida namuna qilib yozib bering.`;
+1. "htmlHighlightedText": Matn ichidagi FAQATGINA TASDIQLANGAN XATOLARNI o'z joyida ushbu HTML teglari bilan o'rab chiqing va to'g'ri so'zlarga aslo tegmang:
+  - Aniq imlo xatolari uchun: <span class='highlight-red' title='Imlo xatosi: [to'g'ri so'zni yozing]'>xato matn</span>
+  - x/h, o'/o yoki aniq harf xatosi uchun: <span class='highlight-yellow' title='Xato: [to'g'ri so'zni yozing]'>xato</span>
+  - Tinish belgisi umuman noto'g'ri qo'yilgan joy uchungina (har bir vergulga yopishmang): <span class='highlight-blue' title='Tinish belgisi: [qoida]'>yozuv</span>
+  - Jiddiy uslubiy va mantiqiy xatolar uchun: <span class='highlight-orange' title='Uslub: [g'aliz tuzilgan]'>gap</span>
+  - Ajoyib ishlangan jumla yoki maqollar: <span class='highlight-green' title='Juda yaxshi!'>zo'r ibora</span>
+2. "criteriaScores": Quyidagi 4 ta mezon bo'yicha alohida adolatli baho bering (har biri max 6 ball): Mavzu yoritilishi, Mantiqiy izchillik, Lug'at boyligi uslubi, va Imlo punktuatsiyasi.
+3. "totalScore": Mezonlar asosida umumiy bali hisoblang (maksimum 24).
+4. "feedbackList": Esse haqida eng kamida 3 ta aniq, konstruktiv va motivatsion xulosa/izoh yozing (type: 'error', 'warning', 'success').
+5. "idealVersion": O'quvchining fikr muddaosini umuman o'zgartirmagan holda, faqatgina haqiqiy xatolarini to'g'irlab, xuddi shu essening 24 ballik namunaviy variantini yozib bering.`;
 
 // Google Gemini uchun Structured Response Schema (AI roppa-rosa quyidagi tuzilmaga tushib berishga majbur qilinadi)
 const responseSchema = {
@@ -100,11 +101,12 @@ export async function POST(req: Request) {
     
     return NextResponse.json(resultJson);
 
-  } catch (error: any) {
-    console.error("AI Tahlil Xatoligi:", error.message);
+  } catch (error: unknown) {
+    const err = error as Error;
+    console.error("AI Tahlil Xatoligi:", err.message);
     return NextResponse.json({ 
       error: 'Ichki server xatoligi: Tahlilni yakunlab bo\'lmadi.',
-      details: error.message 
+      details: err.message 
     }, { status: 500 });
   }
 }

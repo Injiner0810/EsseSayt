@@ -74,7 +74,7 @@ export default function GalleryPage() {
       <main className="pt-32 pb-20 px-6 max-w-7xl mx-auto min-h-screen hero-glow animate-fade-in">
         <header className="mb-16 text-center md:text-left">
           <h1 className="font-headline text-5xl md:text-6xl font-bold tracking-tight text-slate-50 mb-4">
-            Insho <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary-fixed-dim">Namunalari</span>
+            Esse <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary-fixed-dim">Namunalari</span>
           </h1>
           <p className="text-slate-300 text-lg max-w-2xl font-body leading-relaxed">
             Yuqori ball to'plagan esse namunalarini ko'ring va o'z yozish ko'nikmalaringizni tahlil qiling. Sun'iy intellekt tomonidan baholangan eng yaxshi ishlar.
@@ -110,11 +110,11 @@ export default function GalleryPage() {
                 <div className="flex gap-4">
                   <div className="flex items-center gap-1.5 text-error">
                     <span className="material-symbols-outlined text-lg">error</span>
-                    <span className="text-xs font-semibold">{Math.floor(Math.random() * 5)}</span>
+                    <span className="text-xs font-semibold">4</span>
                   </div>
                   <div className="flex items-center gap-1.5 text-secondary">
                     <span className="material-symbols-outlined text-lg">auto_fix_high</span>
-                    <span className="text-xs font-semibold">{Math.floor(Math.random() * 5 + 2)}</span>
+                    <span className="text-xs font-semibold">2</span>
                   </div>
                   <div className="flex items-center gap-1.5 text-primary">
                     <span className="material-symbols-outlined text-lg">menu_book</span>
@@ -142,7 +142,7 @@ export default function GalleryPage() {
       <footer className="bg-slate-900/50 w-full py-12 border-t border-slate-700/50">
         <div className="max-w-7xl mx-auto px-8 flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="flex flex-col gap-1.5 text-center md:text-left w-full justify-center md:justify-start">
-            <div className="text-lg font-bold text-slate-50 font-headline">Muallif: Hotamova Diyora</div>
+            <div className="text-lg font-bold text-slate-50 font-headline">Muallif: Hatamova Diyora</div>
             <div className="font-['Inter'] text-sm text-slate-400 flex items-center justify-center md:justify-start gap-1.5">
               <span className="material-symbols-outlined text-sm text-primary">call</span>
               +998 (94) 123 45 67
